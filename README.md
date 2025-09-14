@@ -11,7 +11,7 @@ Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS
 - **Cadastro de Moradores**: Registro de proprietários e locatários 
 - **Visualização de Dados**: Listagem organizada de unidades e moradores
 - **Dashboard**: Estatísticas gerais do condomínio
-- **Interface Responsiva**: Design moderno e adaptável a diferentes dispositivos
+- **Interface Responsiva**: Design moderno e adaptável
 
 ### 📊 Campos de Unidade
 - Número da unidade
