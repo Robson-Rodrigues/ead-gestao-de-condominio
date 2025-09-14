@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Unidade - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Cadastrar Nova Unidade
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="formUnidade">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="numero" class="form-label">
+                                <i class="fas fa-hashtag me-1"></i>
+                                Número da Unidade *
+                            </label>
+                            <input type="text" class="form-control" id="numero" name="numero" required>
+                            <div class="form-text">Ex: 101, 201, A1, B2</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="bloco" class="form-label">
+                                <i class="fas fa-building me-1"></i>
+                                Bloco *
+                            </label>
+                            <input type="text" class="form-control" id="bloco" name="bloco" required>
+                            <div class="form-text">Ex: A, B, 1, 2</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo" class="form-label">
+                                <i class="fas fa-home me-1"></i>
+                                Tipo de Unidade *
+                            </label>
+                            <select class="form-select" id="tipo" name="tipo" required>
+                                <option value="">Selecione o tipo</option>
+                                <option value="Apartamento">Apartamento</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="vagas_garagem" class="form-label">
+                                <i class="fas fa-car me-1"></i>
+                                Vagas de Garagem
+                            </label>
+                            <input type="number" class="form-control" id="vagas_garagem" name="vagas_garagem" min="0" value="0">
+                            <div class="form-text">Número de vagas de garagem</div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            Cadastrar Unidade
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('formUnidade').addEventListener('submit', function(e) {
+    const numero = document.getElementById('numero').value.trim();
+    const bloco = document.getElementById('bloco').value.trim();
+    const tipo = document.getElementById('tipo').value;
+
+    if (!numero || !bloco || !tipo) {
+        e.preventDefault();
+        alert('Por favor, preencha todos os campos obrigatórios!');
+        return;
+    }
+});
+</script>
+{% endblock %}

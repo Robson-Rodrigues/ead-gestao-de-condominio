@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Unidades - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-building me-2"></i>
+                Unidades Cadastradas
+            </h2>
+            <a href="{{ url_for('cadastrar_unidade') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>
+                Nova Unidade
+            </a>
+        </div>
+
+        {% if unidades %}
+            <div class="row">
+                {% for unidade in unidades %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-home me-2"></i>
+                                {{ unidade.bloco }} - {{ unidade.numero }}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong>Tipo:</strong>
+                                    <p class="text-muted">{{ unidade.tipo }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Vagas:</strong>
+                                    <p class="text-muted">{{ unidade.vagas_garagem }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Moradores:</strong>
+                                    <p class="text-muted">{{ unidade.moradores|length }}</p>
+                                </div>
+                            </div>
+                            
+                            {% if unidade.moradores %}
+                            <hr>
+                            <h6 class="text-primary">Moradores:</h6>
+                            {% for morador in unidade.moradores %}
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small>{{ morador.nome }}</small>
+                                <span class="badge bg-{{ 'success' if morador.tipo == 'Proprietário' else 'info' }}">
+                                    {{ morador.tipo }}
+                                </span>
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <hr>
+                            <p class="text-muted text-center">
+                                <i class="fas fa-user-slash me-1"></i>
+                                Nenhum morador cadastrado
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    Cadastrado em {{ unidade.data_cadastro.strftime('%d/%m/%Y') }}
+                                </small>
+                                <form method="POST" action="{{ url_for('deletar_unidade', unidade_id=unidade.id) }}" style="display: inline;" onsubmit="return confirmDelete('unidade')">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash me-1"></i>
+                                        Remover
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Resumo das Unidades
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <h4 class="text-primary">{{ unidades|length }}</h4>
+                                    <p class="text-muted">Total de Unidades</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h4 class="text-success">{{ unidades|selectattr('tipo', 'equalto', 'Apartamento')|list|length }}</h4>
+                                    <p class="text-muted">Apartamentos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-building fa-4x text-muted mb-4"></i>
+                <h4 class="text-muted">Nenhuma unidade cadastrada</h4>
+                <p class="text-muted">Comece cadastrando a primeira unidade do condomínio.</p>
+                <a href="{{ url_for('cadastrar_unidade') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>
+                    Cadastrar Primeira Unidade
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

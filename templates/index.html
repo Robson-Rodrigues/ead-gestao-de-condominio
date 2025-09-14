@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Início - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4">
+                <i class="fas fa-building me-3"></i>
+                Sistema de Gestão de Condomínio
+            </h1>
+            <p class="lead">Gerencie unidades e moradores do seu condomínio de forma simples e eficiente.</p>
+            <hr class="my-4">
+            <p>Cadastro de Unidades e Moradores</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ unidades|length }}</h4>
+                        <p class="card-text">Unidades</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ moradores|length }}</h4>
+                        <p class="card-text">Moradores</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ moradores|selectattr('tipo', 'equalto', 'Proprietário')|list|length }}</h4>
+                        <p class="card-text">Proprietários</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-tie fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ moradores|selectattr('tipo', 'equalto', 'Locatário')|list|length }}</h4>
+                        <p class="card-text">Locatários</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h3 class="mb-4">
+            <i class="fas fa-bolt me-2"></i>
+            Ações Disponíveis
+        </h3>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-plus-circle fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Cadastrar Nova Unidade</h5>
+                <p class="card-text">Adicione novas unidades ao condomínio com todas as informações necessárias.</p>
+                <a href="{{ url_for('cadastrar_unidade') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>
+                    Cadastrar Unidade
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Cadastrar Novo Morador</h5>
+                <p class="card-text">Registre novos moradores e vincule-os às unidades do condomínio.</p>
+                <a href="{{ url_for('cadastrar_morador') }}" class="btn btn-success">
+                    <i class="fas fa-user-plus me-1"></i>
+                    Cadastrar Morador
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-building me-2"></i>
+                    Unidades Recentes
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if unidades %}
+                    <div class="list-group list-group-flush">
+                        {% for unidade in unidades[:5] %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ unidade.bloco }} - {{ unidade.numero }}</strong>
+                                <br>
+                                <small class="text-muted">{{ unidade.tipo }}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ unidade.vagas_garagem }} vagas</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if unidades|length > 5 %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('listar_unidades') }}" class="btn btn-outline-primary btn-sm">
+                            Ver Todas as Unidades
+                        </a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted text-center">Nenhuma unidade cadastrada ainda.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Moradores Recentes
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if moradores %}
+                    <div class="list-group list-group-flush">
+                        {% for morador in moradores[:5] %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ morador.nome }}</strong>
+                                <br>
+                                <small class="text-muted">{{ morador.unidade.bloco }} - {{ morador.unidade.numero }}</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">{{ morador.tipo }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if moradores|length > 5 %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('listar_moradores') }}" class="btn btn-outline-success btn-sm">
+                            Ver Todos os Moradores
+                        </a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted text-center">Nenhum morador cadastrado ainda.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

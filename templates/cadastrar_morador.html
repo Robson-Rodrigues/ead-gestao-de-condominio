@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Morador - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Cadastrar Novo Morador
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="formMorador">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nome" class="form-label">
+                                <i class="fas fa-user me-1"></i>
+                                Nome Completo *
+                            </label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="cpf" class="form-label">
+                                <i class="fas fa-id-card me-1"></i>
+                                CPF *
+                            </label>
+                            <input type="text" class="form-control" id="cpf" name="cpf" required>
+                            <div class="form-text">Formato: 000.000.000-00</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="telefone" class="form-label">
+                                <i class="fas fa-phone me-1"></i>
+                                Telefone *
+                            </label>
+                            <input type="tel" class="form-control" id="telefone" name="telefone" required>
+                            <div class="form-text">Formato: (00) 00000-0000</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>
+                                E-mail *
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo" class="form-label">
+                                <i class="fas fa-user-tag me-1"></i>
+                                Tipo de Morador *
+                            </label>
+                            <select class="form-select" id="tipo" name="tipo" required>
+                                <option value="">Selecione o tipo</option>
+                                <option value="Proprietário">Proprietário</option>
+                                <option value="Locatário">Locatário</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="unidade_id" class="form-label">
+                                <i class="fas fa-building me-1"></i>
+                                Unidade *
+                            </label>
+                            <select class="form-select" id="unidade_id" name="unidade_id" required>
+                                <option value="">Selecione a unidade</option>
+                                {% for unidade in unidades %}
+                                <option value="{{ unidade.id }}">
+                                    {{ unidade.bloco }} - {{ unidade.numero }} ({{ unidade.tipo }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% if not unidades %}
+                            <div class="form-text text-warning">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                Nenhuma unidade cadastrada. Cadastre uma unidade primeiro.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Voltar
+                        </a>
+                        <button type="submit" class="btn btn-success" {% if not unidades %}disabled{% endif %}>
+                            <i class="fas fa-save me-1"></i>
+                            Cadastrar Morador
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('cpf').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    e.target.value = value;
+});
+
+document.getElementById('telefone').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 10) {
+        value = value.replace(/(\d{2})(\d)/, '($1) $2');
+        value = value.replace(/(\d{4})(\d)/, '$1-$2');
+    } else {
+        value = value.replace(/(\d{2})(\d)/, '($1) $2');
+        value = value.replace(/(\d{5})(\d)/, '$1-$2');
+    }
+    e.target.value = value;
+});
+
+document.getElementById('formMorador').addEventListener('submit', function(e) {
+    const nome = document.getElementById('nome').value.trim();
+    const cpf = document.getElementById('cpf').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const tipo = document.getElementById('tipo').value;
+    const unidade_id = document.getElementById('unidade_id').value;
+
+    if (!nome || !cpf || !telefone || !email || !tipo || !unidade_id) {
+        e.preventDefault();
+        alert('Por favor, preencha todos os campos obrigatórios!');
+        return;
+    }
+
+    const cpfNumbers = cpf.replace(/\D/g, '');
+    if (cpfNumbers.length !== 11) {
+        e.preventDefault();
+        alert('CPF deve ter 11 dígitos!');
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        e.preventDefault();
+        alert('Por favor, insira um e-mail válido!');
+        return;
+    }
+});
+</script>
+{% endblock %}
