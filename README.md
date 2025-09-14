@@ -149,26 +149,3 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://usuario:senha@localhost/co
 ```python
 app.run(debug=True, host='0.0.0.0', port=8080)  # Porta 8080
 ```
-
-## 🐛 Resolução de Problemas
-
-### Erro de Dependências
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt --force-reinstall
-```
-
-### Erro de Banco de Dados
-- Delete o arquivo `condominio.db` e execute novamente
-- O banco será recriado automaticamente
-
-### Erro de Porta em Uso
-```bash
-# Encontre o processo usando a porta 5000
-netstat -ano | findstr :5000
-# Finalize o processo ou mude a porta
-```
-=======
-# ead-gestao-de-condominio
-Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS e JavaScript.
->>>>>>> a61e64c10ad77871a3532912aa32d99dbb0504f9
