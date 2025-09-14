@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏠 Sistema de Gestão de Condomínio
 
 ## 📋 Descrição do Projeto
@@ -169,3 +170,7 @@ pip install -r requirements.txt --force-reinstall
 netstat -ano | findstr :5000
 # Finalize o processo ou mude a porta
 ```
+=======
+# ead-gestao-de-condominio
+Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS e JavaScript.
+>>>>>>> a61e64c10ad77871a3532912aa32d99dbb0504f9
