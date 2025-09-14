@@ -17,7 +17,6 @@ Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS
 - Número da unidade
 - Bloco
 - Tipo (Apartamento, Casa, Loja, etc.)
-- Área em m²
 - Número de vagas de garagem
 
 ### 👥 Campos de Morador
