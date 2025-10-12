@@ -11,7 +11,7 @@ Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS
 - **Cadastro de Moradores**: Registro de proprietários e locatários 
 - **Visualização de Dados**: Listagem organizada de unidades e moradores
 - **Dashboard**: Estatísticas gerais do condomínio
-- **Interface Responsiva**: Design moderno e adaptável a diferentes dispositivos
+- **Interface Responsiva**: Design moderno e adaptável
 
 ### ✅ AC2 - Implementadas
 - **Sistema de Login**: Autenticação de usuários (Admin e Morador)
@@ -24,7 +24,6 @@ Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS
 - Número da unidade
 - Bloco
 - Tipo (Apartamento, Casa, Loja, etc.)
-- Área em m²
 - Número de vagas de garagem
 
 ### 👥 Campos de Morador
@@ -185,6 +184,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://usuario:senha@localhost/co
 ```python
 app.run(debug=True, host='0.0.0.0', port=8080)  # Porta 8080
 ```
+<<<<<<< HEAD
 
 ## 🐛 Resolução de Problemas
 
@@ -204,3 +204,5 @@ pip install -r requirements.txt --force-reinstall
 netstat -ano | findstr :5000
 # Finalize o processo ou mude a porta
 ```
+=======
+>>>>>>> e3a5be86098146e484f1d9863b1c2ae5996555d7
