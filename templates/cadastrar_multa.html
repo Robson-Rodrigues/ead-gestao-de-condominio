@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Multa - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Cadastrar Multa
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="morador_id" class="form-label">
+                                    <i class="fas fa-user me-1"></i>Morador *
+                                </label>
+                                <select class="form-select" id="morador_id" name="morador_id" required>
+                                    <option value="">Selecione um morador</option>
+                                    {% for morador in moradores %}
+                                    <option value="{{ morador.id }}">
+                                        {{ morador.nome }} - {{ morador.unidade.bloco }}/{{ morador.unidade.numero }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="valor" class="form-label">
+                                    <i class="fas fa-dollar-sign me-1"></i>Valor (R$) *
+                                </label>
+                                <input type="number" class="form-control" id="valor" name="valor" 
+                                       step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="data_vencimento" class="form-label">
+                                <i class="fas fa-calendar me-1"></i>Data de Vencimento *
+                            </label>
+                            <input type="date" class="form-control" id="data_vencimento" name="data_vencimento" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">
+                                <i class="fas fa-comment me-1"></i>Descrição da Multa *
+                            </label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="4" 
+                                      placeholder="Descreva o motivo da multa..." required></textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('listar_multas') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Voltar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-save me-1"></i>Cadastrar Multa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const valorInput = document.getElementById('valor');
+    const dataVencimentoInput = document.getElementById('data_vencimento');
+    
+    valorInput.addEventListener('input', function(e) {
+        let value = e.target.value;
+        if (value < 0) {
+            e.target.value = 0;
+        }
+    });
+    
+    const hoje = new Date().toISOString().split('T')[0];
+    dataVencimentoInput.min = hoje;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-circle me-2"></i>Meu Perfil
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-user-circle fa-5x text-primary"></i>
+                            </div>
+                            <h5>{{ usuario.username }}</h5>
+                            <span class="badge bg-{{ 'danger' if usuario.tipo == 'Admin' else 'info' }}">
+                                {{ usuario.tipo }}
+                            </span>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Usuário:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ usuario.username }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>E-mail:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ usuario.email }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Tipo:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span class="badge bg-{{ 'danger' if usuario.tipo == 'Admin' else 'info' }}">
+                                        {{ usuario.tipo }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Status:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span class="badge bg-{{ 'success' if usuario.ativo else 'danger' }}">
+                                        {{ 'Ativo' if usuario.ativo else 'Inativo' }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Data de Cadastro:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ usuario.data_cadastro.strftime('%d/%m/%Y às %H:%M') }}
+                                </div>
+                            </div>
+                            
+                            {% if usuario.morador %}
+                            <hr>
+                            <h6 class="text-primary">
+                                <i class="fas fa-home me-1"></i>Informações do Morador
+                            </h6>
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Nome:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ usuario.morador.nome }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Unidade:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ usuario.morador.unidade.bloco }} - {{ usuario.morador.unidade.numero }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Telefone:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ usuario.morador.telefone }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

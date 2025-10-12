@@ -1,18 +1,24 @@
-<<<<<<< HEAD
 # 🏠 Sistema de Gestão de Condomínio
 
 ## 📋 Descrição do Projeto
 
 Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS e JavaScript.
 
-## 🎯 Funcionalidades da AC1
+## 🎯 Funcionalidades
 
-### ✅ Implementadas
+### ✅ AC1 - Implementadas
 - **Cadastro de Unidades**: Registro de apartamento
 - **Cadastro de Moradores**: Registro de proprietários e locatários 
 - **Visualização de Dados**: Listagem organizada de unidades e moradores
 - **Dashboard**: Estatísticas gerais do condomínio
 - **Interface Responsiva**: Design moderno e adaptável a diferentes dispositivos
+
+### ✅ AC2 - Implementadas
+- **Sistema de Login**: Autenticação de usuários (Admin e Morador)
+- **Perfil de Usuário**: Visualização de dados pessoais
+- **Cadastro de Visitantes**: Controle de entrada e saída
+- **Sistema de Multas**: Gestão de multas e cobranças
+- **Controle de Acesso**: Diferentes permissões por tipo de usuário
 
 ### 📊 Campos de Unidade
 - Número da unidade
@@ -85,53 +91,81 @@ Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS
    http://localhost:5000
    ```
 
+### 👤 Usuários de Exemplo
+Para testar o sistema, você pode criar usuários manualmente através da interface ou usar as credenciais padrão:
+- **Admin**: `admin` / `admin123`
+- **Morador**: `joao.silva` / `123456`
+- **Morador**: `maria.santos` / `123456`
+
 ## 📁 Estrutura do Projeto
 
 ```
 sistema-gestao-de-Condomínio/
 │
-├── app.py                 # Aplicação principal Flask
-├── requirements.txt       # Dependências Python
-├── README.md             # Documentação
-├── condominio.db         # Banco de dados SQLite (criado automaticamente)
+├── app.py                    # Aplicação principal Flask
+├── requirements.txt          # Dependências Python
+├── README.md                # Documentação
+├── condominio.db            # Banco de dados SQLite (criado automaticamente)
 │
-├── templates/            # Templates HTML
-│   ├── base.html         # Template base
-│   ├── index.html        # Página inicial
+├── templates/               # Templates HTML
+│   ├── base.html            # Template base
+│   ├── index.html           # Página inicial
+│   ├── login.html           # Página de login
+│   ├── perfil.html          # Página de perfil
 │   ├── cadastrar_unidade.html
 │   ├── cadastrar_morador.html
-│   ├── unidades.html     # Lista de unidades
-│   └── moradores.html    # Lista de moradores
+│   ├── cadastrar_visitante.html
+│   ├── cadastrar_multa.html
+│   ├── unidades.html        # Lista de unidades
+│   ├── moradores.html       # Lista de moradores
+│   ├── visitantes.html      # Lista de visitantes
+│   └── multas.html          # Lista de multas
 │
-└── static/              # Arquivos estáticos
+└── static/                 # Arquivos estáticos
     ├── css/
-    │   └── style.css    # Estilos customizados
+    │   └── style.css       # Estilos customizados
     └── js/
-        └── script.js    # JavaScript customizado
+        └── script.js       # JavaScript customizado
 ```
 
 ## 🎮 Como Usar
 
-### 1. Página Inicial
-- Visualize estatísticas gerais do condomínio
-- Acesse ações disponíveis para cadastros
-- Veja listas resumidas de unidades e moradores
+### 1. Login (Tela Inicial)
+1. Acesse o sistema - será redirecionado automaticamente para o login
+2. Faça login com suas credenciais
+3. Escolha entre Admin ou Morador
 
-### 2. Cadastrar Unidade
-1. Clique em "Cadastrar Unidade" no menu
-2. Preencha os dados da unidade
-3. Clique em "Cadastrar Unidade"
-4. A unidade será salva no banco de dados
+### 2. Dashboard
+**Para Administradores:**
+- Total de unidades do condomínio
+- Total de moradores do condomínio
+- Multas pendentes dos moradores
+- Acesso completo a todas as funcionalidades
 
-### 3. Cadastrar Morador
-1. Clique em "Cadastrar Morador" no menu
-2. Preencha os dados do morador
-3. Selecione a unidade onde reside
-4. Clique em "Cadastrar Morador"
+**Para Moradores:**
+- Moradores na sua unidade
+- Visitantes ativos da sua unidade
+- Multas em aberto e valor total
+- Cadastro de visitantes (apenas para sua unidade)
+- Visualização das suas multas
+- Acesso limitado às funcionalidades
 
-### 4. Visualizar Dados
-- **Unidades**: Veja todas as unidades cadastradas com detalhes
-- **Moradores**: Veja todos os moradores em formato de tabela
+### 3. Gestão de Unidades e Moradores
+- **Cadastrar Unidade**: Registre novas unidades
+- **Cadastrar Morador**: Vincule moradores às unidades
+- **Visualizar Dados**: Consulte listas organizadas
+
+### 4. Controle de Visitantes
+- **Admin**: Pode cadastrar visitantes para qualquer unidade
+- **Morador**: Pode cadastrar visitantes apenas para sua própria unidade
+- **Registrar Saída**: Controle a saída dos visitantes
+- **Histórico**: Veja todas as visitas realizadas
+
+### 5. Sistema de Multas
+- **Admin**: Pode cadastrar multas e marcar como pagas
+- **Morador**: Pode apenas visualizar suas multas (sem opção de pagar)
+- **Acompanhar Pagamentos**: Veja status das multas
+- **Relatórios**: Consulte valores e pendências
 
 ## 🔧 Configurações
 
@@ -170,7 +204,3 @@ pip install -r requirements.txt --force-reinstall
 netstat -ano | findstr :5000
 # Finalize o processo ou mude a porta
 ```
-=======
-# ead-gestao-de-condominio
-Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS e JavaScript.
->>>>>>> a61e64c10ad77871a3532912aa32d99dbb0504f9

@@ -44,6 +44,7 @@ body {
     backdrop-filter: blur(10px);
     box-shadow: var(--shadow-lg);
     border: none;
+    position: relative !important;
 }
 
 .navbar-brand {
@@ -455,4 +456,30 @@ h1, h2, h3, h4, h5, h6 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+.dropdown-menu {
+    box-shadow: var(--shadow-xl) !important;
+    border: none !important;
+    border-radius: var(--border-radius) !important;
+    padding: 8px 0 !important;
+    margin-top: 8px !important;
+}
+
+.dropdown-item {
+    padding: 12px 20px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    border-radius: 0 !important;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
+    color: white !important;
+    transform: translateX(4px) !important;
+}
+
+.dropdown-divider {
+    margin: 8px 0 !important;
+    border-color: var(--gray-200) !important;
 }

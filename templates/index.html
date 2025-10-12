@@ -10,21 +10,24 @@
                 <i class="fas fa-building me-3"></i>
                 Sistema de Gestão de Condomínio
             </h1>
-            <p class="lead">Gerencie unidades e moradores do seu condomínio de forma simples e eficiente.</p>
+            <p class="lead">Gerencie unidades, moradores, visitantes e multas do seu condomínio de forma simples e eficiente.</p>
             <hr class="my-4">
-            <p>Cadastro de Unidades e Moradores</p>
+            <p>Sistema completo de gestão condominial</p>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-6 col-lg-3 mb-4">
+
+{% if session.user_id %}
+{% if session.tipo == 'Admin' %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4 mb-4">
         <div class="card bg-primary text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
                         <h4 class="card-title">{{ unidades|length }}</h4>
-                        <p class="card-text">Unidades</p>
+                        <p class="card-text">Total de Unidades</p>
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-building fa-2x"></i>
@@ -34,13 +37,13 @@
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-3 mb-4">
+    <div class="col-md-6 col-lg-4 mb-4">
         <div class="card bg-success text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
                         <h4 class="card-title">{{ moradores|length }}</h4>
-                        <p class="card-text">Moradores</p>
+                        <p class="card-text">Total de Moradores</p>
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-users fa-2x"></i>
@@ -50,16 +53,34 @@
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-3 mb-4">
-        <div class="card bg-info text-white">
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card bg-danger text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h4 class="card-title">{{ moradores|selectattr('tipo', 'equalto', 'Proprietário')|list|length }}</h4>
-                        <p class="card-text">Proprietários</p>
+                        <h4 class="card-title">{{ multas_pendentes }}</h4>
+                        <p class="card-text">Multas Pendentes</p>
                     </div>
                     <div class="align-self-center">
-                        <i class="fas fa-user-tie fa-2x"></i>
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ moradores_unidade }}</h4>
+                        <p class="card-text">Moradores na Unidade</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-home fa-2x"></i>
                     </div>
                 </div>
             </div>
@@ -71,23 +92,59 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h4 class="card-title">{{ moradores|selectattr('tipo', 'equalto', 'Locatário')|list|length }}</h4>
-                        <p class="card-text">Locatários</p>
+                        <h4 class="card-title">{{ visitantes_ativos }}</h4>
+                        <p class="card-text">Visitantes Ativos</p>
                     </div>
                     <div class="align-self-center">
-                        <i class="fas fa-user fa-2x"></i>
+                        <i class="fas fa-user-friends fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ multas_abertas }}</h4>
+                        <p class="card-text">Multas em Aberto</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-dark text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">R$ {{ "%.2f"|format(valor_multas) }}</h4>
+                        <p class="card-text">Valor em Multas</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-dollar-sign fa-2x"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
+{% endif %}
 
+{% if session.user_id %}
+{% if session.tipo == 'Admin' %}
 <div class="row">
     <div class="col-12">
         <h3 class="mb-4">
-            <i class="fas fa-bolt me-2"></i>
-            Ações Disponíveis
+            <i class="fas fa-crown me-2"></i>
+            Ações de Administrador
         </h3>
     </div>
 
@@ -118,79 +175,73 @@
             </div>
         </div>
     </div>
-</div>
 
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user-friends fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Cadastrar Visitante</h5>
+                <p class="card-text">Registre a entrada de visitantes no condomínio.</p>
+                <a href="{{ url_for('cadastrar_visitante') }}" class="btn btn-info">
+                    <i class="fas fa-user-friends me-1"></i>
+                    Cadastrar Visitante
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                <h5 class="card-title">Cadastrar Multa</h5>
+                <p class="card-text">Registre multas para moradores do condomínio.</p>
+                <a href="{{ url_for('cadastrar_multa') }}" class="btn btn-danger">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Cadastrar Multa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
 <div class="row">
+    <div class="col-12">
+        <h3 class="mb-4">
+            <i class="fas fa-home me-2"></i>
+            Ações de Morador
+        </h3>
+    </div>
+
     <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">
-                    <i class="fas fa-building me-2"></i>
-                    Unidades Recentes
-                </h5>
-            </div>
-            <div class="card-body">
-                {% if unidades %}
-                    <div class="list-group list-group-flush">
-                        {% for unidade in unidades[:5] %}
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>{{ unidade.bloco }} - {{ unidade.numero }}</strong>
-                                <br>
-                                <small class="text-muted">{{ unidade.tipo }}</small>
-                            </div>
-                            <span class="badge bg-primary rounded-pill">{{ unidade.vagas_garagem }} vagas</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% if unidades|length > 5 %}
-                    <div class="text-center mt-3">
-                        <a href="{{ url_for('listar_unidades') }}" class="btn btn-outline-primary btn-sm">
-                            Ver Todas as Unidades
-                        </a>
-                    </div>
-                    {% endif %}
-                {% else %}
-                    <p class="text-muted text-center">Nenhuma unidade cadastrada ainda.</p>
-                {% endif %}
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user-friends fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Cadastrar Visitante</h5>
+                <p class="card-text">Registre a entrada de visitantes na sua unidade.</p>
+                <a href="{{ url_for('cadastrar_visitante') }}" class="btn btn-info">
+                    <i class="fas fa-user-friends me-1"></i>
+                    Cadastrar Visitante
+                </a>
             </div>
         </div>
     </div>
 
     <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">
-                    <i class="fas fa-users me-2"></i>
-                    Moradores Recentes
-                </h5>
-            </div>
-            <div class="card-body">
-                {% if moradores %}
-                    <div class="list-group list-group-flush">
-                        {% for morador in moradores[:5] %}
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>{{ morador.nome }}</strong>
-                                <br>
-                                <small class="text-muted">{{ morador.unidade.bloco }} - {{ morador.unidade.numero }}</small>
-                            </div>
-                            <span class="badge bg-success rounded-pill">{{ morador.tipo }}</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% if moradores|length > 5 %}
-                    <div class="text-center mt-3">
-                        <a href="{{ url_for('listar_moradores') }}" class="btn btn-outline-success btn-sm">
-                            Ver Todos os Moradores
-                        </a>
-                    </div>
-                    {% endif %}
-                {% else %}
-                    <p class="text-muted text-center">Nenhum morador cadastrado ainda.</p>
-                {% endif %}
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Minhas Multas</h5>
+                <p class="card-text">Visualize e gerencie suas multas em aberto.</p>
+                <a href="{{ url_for('listar_multas') }}" class="btn btn-warning">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Ver Multas
+                </a>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
+{% endif %}
+
 {% endblock %}

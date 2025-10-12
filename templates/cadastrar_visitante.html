@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Visitante - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Cadastrar Visitante
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">
+                                    <i class="fas fa-user me-1"></i>Nome Completo *
+                                </label>
+                                <input type="text" class="form-control" id="nome" name="nome" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="cpf" class="form-label">
+                                    <i class="fas fa-id-card me-1"></i>CPF *
+                                </label>
+                                <input type="text" class="form-control" id="cpf" name="cpf" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="telefone" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>Telefone *
+                                </label>
+                                <input type="text" class="form-control" id="telefone" name="telefone" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="unidade_id" class="form-label">
+                                    <i class="fas fa-home me-1"></i>
+                                    {% if session.tipo == 'Admin' %}
+                                    Unidade Visitada *
+                                    {% else %}
+                                    Sua Unidade *
+                                    {% endif %}
+                                </label>
+                                {% if session.tipo == 'Admin' %}
+                                <select class="form-select" id="unidade_id" name="unidade_id" required>
+                                    <option value="">Selecione uma unidade</option>
+                                    {% for unidade in unidades %}
+                                    <option value="{{ unidade.id }}">
+                                        {{ unidade.bloco }} - {{ unidade.numero }} ({{ unidade.tipo }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% else %}
+                                <select class="form-select" id="unidade_id" name="unidade_id" required>
+                                    {% for unidade in unidades %}
+                                    <option value="{{ unidade.id }}" selected>
+                                        {{ unidade.bloco }} - {{ unidade.numero }} ({{ unidade.tipo }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Visitante será registrado para sua unidade
+                                </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="observacoes" class="form-label">
+                                <i class="fas fa-comment me-1"></i>Observações
+                            </label>
+                            <textarea class="form-control" id="observacoes" name="observacoes" rows="3" placeholder="Informações adicionais sobre o visitante..."></textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('listar_visitantes') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Cadastrar Visitante
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cpfInput = document.getElementById('cpf');
+    const telefoneInput = document.getElementById('telefone');
+    
+    cpfInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = value;
+    });
+    
+    telefoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{2})(\d)/, '($1) $2');
+        value = value.replace(/(\d{4})(\d)/, '$1-$2');
+        value = value.replace(/(\d{4})-(\d)(\d{4})/, '$1$2-$3');
+        e.target.value = value;
+    });
+});
+</script>
+{% endblock %}

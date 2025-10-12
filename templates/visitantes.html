@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Visitantes - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-user-friends me-2"></i>Visitantes
+        </h2>
+        <a href="{{ url_for('cadastrar_visitante') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Cadastrar Visitante
+        </a>
+    </div>
+    
+    <div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h5>Total de Visitantes</h5>
+                <h3>{{ total_visitantes }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-sign-in-alt fa-2x mb-2"></i>
+                <h5>Visitantes Ativos</h5>
+                <h3>{{ visitantes_ativos }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-sign-out-alt fa-2x mb-2"></i>
+                <h5>Visitantes Finalizados</h5>
+                <h3>{{ visitantes_finalizados }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x mb-2"></i>
+                <h5>Hoje</h5>
+                <h3>{{ visitantes_hoje }}</h3>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <div class="card shadow-lg border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Telefone</th>
+                            <th>Unidade</th>
+                            <th>Entrada</th>
+                            <th>Saída</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visitante in visitantes %}
+                        <tr>
+                            <td>
+                                <i class="fas fa-user me-1"></i>
+                                {{ visitante.nome }}
+                            </td>
+                            <td>{{ visitante.cpf }}</td>
+                            <td>{{ visitante.telefone }}</td>
+                            <td>
+                                <span class="badge bg-secondary">
+                                    {{ visitante.unidade.bloco }} - {{ visitante.unidade.numero }}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {{ visitante.data_entrada.strftime('%d/%m/%Y') }}<br>
+                                    {{ visitante.data_entrada.strftime('%H:%M') }}
+                                </small>
+                            </td>
+                            <td>
+                                {% if visitante.data_saida %}
+                                <small class="text-muted">
+                                    {{ visitante.data_saida.strftime('%d/%m/%Y') }}<br>
+                                    {{ visitante.data_saida.strftime('%H:%M') }}
+                                </small>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if visitante.data_saida %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>Finalizado
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-clock me-1"></i>Ativo
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not visitante.data_saida %}
+                                <form method="POST" action="{{ url_for('registrar_saida', visitante_id=visitante.id) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-success" 
+                                            onclick="return confirm('Registrar saída do visitante {{ visitante.nome }}?')">
+                                        <i class="fas fa-sign-out-alt me-1"></i>Registrar Saída
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

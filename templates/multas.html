@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Multas - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-exclamation-triangle me-2"></i>Multas
+        </h2>
+        {% if session.tipo == 'Admin' %}
+        <a href="{{ url_for('cadastrar_multa') }}" class="btn btn-danger">
+            <i class="fas fa-plus me-1"></i>Cadastrar Multa
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                    <h5>Total de Multas</h5>
+                    <h3>{{ multas|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h5>Pendentes</h5>
+                    <h3>{{ multas|selectattr('status', 'equalto', 'Pendente')|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-check fa-2x mb-2"></i>
+                    <h5>Pagas</h5>
+                    <h3>{{ multas|selectattr('status', 'equalto', 'Pago')|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                    <h5>Valor Total</h5>
+                    <h3>R$ {{ "%.2f"|format(multas|sum(attribute='valor')) }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-lg border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-danger">
+                        <tr>
+                            <th>Morador</th>
+                            <th>Unidade</th>
+                            <th>Valor</th>
+                            <th>Descrição</th>
+                            <th>Vencimento</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for multa in multas %}
+                        <tr>
+                            <td>
+                                <i class="fas fa-user me-1"></i>
+                                {{ multa.morador.nome }}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">
+                                    {{ multa.morador.unidade.bloco }} - {{ multa.morador.unidade.numero }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong class="text-danger">R$ {{ "%.2f"|format(multa.valor) }}</strong>
+                            </td>
+                            <td>
+                                <small>{{ multa.descricao[:50] }}{% if multa.descricao|length > 50 %}...{% endif %}</small>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {{ multa.data_vencimento.strftime('%d/%m/%Y') }}
+                                </small>
+                            </td>
+                            <td>
+                                {% if multa.status == 'Pago' %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>Pago
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-clock me-1"></i>Pendente
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if multa.status == 'Pago' %}
+                                <small class="text-muted">
+                                    Pago em {{ multa.data_pagamento.strftime('%d/%m/%Y') }}
+                                </small>
+                                {% elif session.tipo == 'Admin' %}
+                                <form method="POST" action="{{ url_for('pagar_multa', multa_id=multa.id) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-success" 
+                                            onclick="return confirm('Marcar multa como paga?')">
+                                        <i class="fas fa-check me-1"></i>Pagar
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>Pendente
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
