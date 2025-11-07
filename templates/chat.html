@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h6 mb-0">
+                    <i class="fas fa-plus me-2"></i>
+                    Nova Conversa
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if usuarios_disponiveis %}
+                <form method="get" action="{{ url_for('chat_home') }}" class="d-flex gap-2">
+                    <select name="destinatario" class="form-select" required>
+                        <option value="" disabled selected>Selecione um usuário</option>
+                        {% for contato in usuarios_disponiveis %}
+                        <option value="{{ contato.id }}">
+                            {{ contato.username }}
+                            {% if contato.morador %}
+                                - {{ contato.morador.nome }}
+                            {% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-comments"></i>
+                    </button>
+                </form>
+                {% else %}
+                <p class="text-muted mb-0">Nenhum usuário disponível para iniciar conversa.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h6 mb-0">
+                    <i class="fas fa-inbox me-2"></i>
+                    Conversas
+                </h2>
+            </div>
+            <div class="list-group list-group-flush">
+                {% if conversas %}
+                    {% for conversa in conversas %}
+                    <a href="{{ url_for('chat_conversa', destinatario_id=conversa.usuario.id) }}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-start {% if destinatario and destinatario.id == conversa.usuario.id %}active{% endif %}">
+                        <div class="me-2">
+                            <div class="fw-semibold">
+                                {{ conversa.usuario.username }}
+                                {% if conversa.usuario.morador %}
+                                    <span class="small d-block">{{ conversa.usuario.morador.nome }}</span>
+                                {% endif %}
+                            </div>
+                            {% if conversa.ultima_mensagem %}
+                            <small class="text-muted">
+                                {% if conversa.ultima_mensagem.remetente_id == usuario.id %}Você:{% else %}{{ conversa.usuario.username }}:{% endif %}
+                                {{ conversa.ultima_mensagem.mensagem|truncate(50, True, '...') }}
+                            </small>
+                            <div>
+                                <small class="text-muted">
+                                    {{ conversa.ultima_data.strftime('%d/%m/%Y %H:%M') }}
+                                </small>
+                            </div>
+                            {% else %}
+                            <small class="text-muted">Sem mensagens ainda</small>
+                            {% endif %}
+                        </div>
+                        {% if conversa.nao_lidas %}
+                        <span class="badge bg-danger rounded-pill">{{ conversa.nao_lidas }}</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                {% else %}
+                <div class="list-group-item text-center text-muted">
+                    Nenhuma conversa iniciada.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+            {% if destinatario %}
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-user-circle me-2"></i>
+                        Conversa com {{ destinatario.username }}
+                    </h2>
+                    {% if destinatario.morador %}
+                        <small class="text-muted d-block">
+                            {{ destinatario.morador.nome }}
+                            {% if destinatario.morador.unidade %}
+                                - {{ destinatario.morador.unidade.bloco }} {{ destinatario.morador.unidade.numero }}
+                            {% endif %}
+                        </small>
+                    {% endif %}
+                </div>
+                <small class="text-muted">{{ destinatario.tipo }}</small>
+            </div>
+            <div class="card-body" style="max-height: 60vh; overflow-y: auto;">
+                {% if mensagens %}
+                    {% for mensagem in mensagens %}
+                    <div class="d-flex mb-3 {% if mensagem.remetente_id == usuario.id %}justify-content-end{% else %}justify-content-start{% endif %}">
+                        <div class="p-3 rounded-3 {% if mensagem.remetente_id == usuario.id %}bg-primary text-white{% else %}bg-light border{% endif %}" style="max-width: 70%;">
+                            <p class="mb-2">{{ mensagem.mensagem }}</p>
+                            <small class="{% if mensagem.remetente_id == usuario.id %}text-white-50{% else %}text-muted{% endif %}">
+                                {{ mensagem.enviada_em.strftime('%d/%m/%Y %H:%M') }}
+                                {% if mensagem.remetente_id == usuario.id %}
+                                    {% if mensagem.lida_em %}
+                                        • Lida
+                                    {% else %}
+                                        • Enviada
+                                    {% endif %}
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-comments fa-3x mb-3"></i>
+                    <p class="lead mb-0">Nenhuma mensagem nesta conversa. Envie a primeira!</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-white">
+                <form method="post" class="d-flex gap-2">
+                    <textarea name="mensagem" class="form-control" rows="2" placeholder="Digite sua mensagem..." required></textarea>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i>
+                        Enviar
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div class="card-body text-center text-muted py-5">
+                <i class="fas fa-comments fa-3x mb-3"></i>
+                <p class="lead">Selecione uma conversa ou inicie um novo chat para começar.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

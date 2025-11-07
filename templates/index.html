@@ -68,6 +68,54 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ reservas_pendentes }}</h4>
+                        <p class="card-text">Reservas Pendentes</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ funcionarios_ativos }}</h4>
+                        <p class="card-text">Funcionários Ativos</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-tie fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ notificacoes_totais }}</h4>
+                        <p class="card-text">Notificações Enviadas</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-bell fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% else %}
 <div class="row">
@@ -129,6 +177,38 @@
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-dollar-sign fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ reservas_realizadas }}</h4>
+                        <p class="card-text">Minhas Reservas</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar-check fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ notificacoes_disponiveis }}</h4>
+                        <p class="card-text">Notificações Recebidas</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-bell fa-2x"></i>
                     </div>
                 </div>
             </div>
@@ -203,6 +283,48 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-plus fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Gerenciar Reservas</h5>
+                <p class="card-text">Acompanhe e aprove reservas das áreas comuns.</p>
+                <a href="{{ url_for('listar_reservas') }}" class="btn btn-warning text-white">
+                    <i class="fas fa-calendar-check me-1"></i>
+                    Ver Reservas
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user-tie fa-3x text-secondary mb-3"></i>
+                <h5 class="card-title">Gerenciar Funcionários</h5>
+                <p class="card-text">Cadastre e administre os colaboradores do condomínio.</p>
+                <a href="{{ url_for('listar_funcionarios') }}" class="btn btn-secondary text-white">
+                    <i class="fas fa-user-tie me-1"></i>
+                    Ver Funcionários
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-bell fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Enviar Notificações</h5>
+                <p class="card-text">Comunique moradores com avisos importantes.</p>
+                <a href="{{ url_for('cadastrar_notificacao') }}" class="btn btn-primary">
+                    <i class="fas fa-bell me-1"></i>
+                    Nova Notificação
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 {% else %}
 <div class="row">
@@ -222,6 +344,34 @@
                 <a href="{{ url_for('cadastrar_visitante') }}" class="btn btn-info">
                     <i class="fas fa-user-friends me-1"></i>
                     Cadastrar Visitante
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-plus fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Nova Reserva</h5>
+                <p class="card-text">Reserve as áreas comuns com alguns cliques.</p>
+                <a href="{{ url_for('cadastrar_reserva') }}" class="btn btn-primary">
+                    <i class="fas fa-calendar-plus me-1"></i>
+                    Fazer Reserva
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-bell fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Minhas Notificações</h5>
+                <p class="card-text">Confira avisos da administração.</p>
+                <a href="{{ url_for('listar_notificacoes') }}" class="btn btn-info text-white">
+                    <i class="fas fa-bell me-1"></i>
+                    Ver Notificações
                 </a>
             </div>
         </div>

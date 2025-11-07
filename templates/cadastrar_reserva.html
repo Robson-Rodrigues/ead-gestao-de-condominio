@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Reserva - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h4 mb-0">
+                    <i class="fas fa-calendar-plus me-2"></i>
+                    Cadastrar Reserva
+                </h1>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% if usuario.tipo == 'Admin' %}
+                    <div class="mb-3">
+                        <label for="morador_id" class="form-label">Morador</label>
+                        <select name="morador_id" id="morador_id" class="form-select" required>
+                            <option value="" disabled selected>Selecione o morador</option>
+                            {% for morador in moradores %}
+                            <option value="{{ morador.id }}">
+                                {{ morador.nome }} - Unidade {{ morador.unidade.bloco }} {{ morador.unidade.numero }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="area" class="form-label">Área</label>
+                        <input type="text" class="form-control" id="area" name="area" placeholder="Ex: Salão de Festas" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="data" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="data" name="data" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="horario_inicio" class="form-label">Horário Início</label>
+                                <input type="time" class="form-control" id="horario_inicio" name="horario_inicio" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="horario_fim" class="form-label">Horário Fim</label>
+                                <input type="time" class="form-control" id="horario_fim" name="horario_fim" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="observacoes" class="form-label">Observações</label>
+                        <textarea class="form-control" id="observacoes" name="observacoes" rows="4" placeholder="Informe detalhes adicionais se necessário."></textarea>
+                    </div>
+
+                    {% if usuario.tipo == 'Admin' %}
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status Inicial</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="Pendente" selected>Pendente</option>
+                            <option value="Aprovada">Aprovada</option>
+                            <option value="Rejeitada">Rejeitada</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('listar_reservas') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            Salvar Reserva
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

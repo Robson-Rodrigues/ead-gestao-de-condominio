@@ -45,6 +45,7 @@ body {
     box-shadow: var(--shadow-lg);
     border: none;
     position: relative !important;
+    z-index: 1050 !important;
 }
 
 .navbar-brand {

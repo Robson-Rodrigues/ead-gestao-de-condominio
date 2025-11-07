@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Notificações - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-bell me-2"></i>
+            Notificações
+        </h1>
+        <p class="text-muted mb-0">
+            Central de comunicados entre administração e moradores.
+            {% if notificacoes_nao_lidas_pendentes %}
+            <span class="badge bg-danger ms-2">
+                {{ notificacoes_nao_lidas_pendentes }} não lida{{ 's' if notificacoes_nao_lidas_pendentes > 1 else '' }}
+            </span>
+            {% endif %}
+        </p>
+    </div>
+    {% if usuario.tipo == 'Admin' %}
+    <a href="{{ url_for('cadastrar_notificacao') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>
+        Nova Notificação
+    </a>
+    {% endif %}
+</div>
+
+{% if notificacoes %}
+    {% if usuario.tipo == 'Admin' %}
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Título</th>
+                    <th>Destinatário</th>
+                    <th>Mensagem</th>
+                    <th>Enviada em</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for notificacao in notificacoes %}
+                <tr>
+                    <td>{{ notificacao.titulo }}</td>
+                    <td>
+                        {% if notificacao.morador %}
+                            {{ notificacao.morador.nome }} ({{ notificacao.morador.unidade.bloco }} - {{ notificacao.morador.unidade.numero }})
+                        {% else %}
+                            Todos
+                        {% endif %}
+                    </td>
+                    <td>{{ notificacao.mensagem }}</td>
+                    <td>{{ notificacao.data_envio.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td class="text-end">
+                        <form action="{{ url_for('excluir_notificacao', notificacao_id=notificacao.id) }}" method="post" onsubmit="return confirm('Deseja realmente excluir esta notificação?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="row g-3">
+        {% for notificacao in notificacoes %}
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-1">{{ notificacao.titulo }}</h5>
+                            <h6 class="card-subtitle text-muted mb-3">
+                                Enviado em {{ notificacao.data_envio.strftime('%d/%m/%Y %H:%M') }}
+                                {% if notificacao.morador %}
+                                    • Destinado a você
+                                {% else %}
+                                    • Notificação geral
+                                {% endif %}
+                            </h6>
+                        </div>
+                    </div>
+                    <p class="card-text mb-0">{{ notificacao.mensagem }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% else %}
+<div class="text-center py-5 bg-light rounded">
+    <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+    <p class="lead mb-0">Nenhuma notificação encontrada.</p>
+</div>
+{% endif %}
+{% endblock %}
+
