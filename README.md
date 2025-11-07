@@ -20,6 +20,12 @@ Sistema web para gestão de condomínio desenvolvido com Python Flask, HTML, CSS
 - **Sistema de Multas**: Gestão de multas e cobranças
 - **Controle de Acesso**: Diferentes permissões por tipo de usuário
 
+### ✅ AC3 - Implementadas
+- **Sistema de Reservas**: Moradores solicitam reservas de áreas comuns e administradores aprovam/rejeitam
+- **Gestão de Funcionários**: Cadastro completo de colaboradores, inclusive ativação/inativação
+- **Sistema de Notificações**: Envio de avisos gerais ou específicos com controle de leitura
+- **Chat Interno**: Conversa em tempo real entre administradores e moradores com alerta de não lidas
+
 ### 📊 Campos de Unidade
 - Número da unidade
 - Bloco
@@ -103,8 +109,8 @@ sistema-gestao-de-Condomínio/
 │
 ├── app.py                    # Aplicação principal Flask
 ├── requirements.txt          # Dependências Python
-├── README.md                # Documentação
-├── condominio.db            # Banco de dados SQLite (criado automaticamente)
+├── README.md                 # Documentação
+├── condominio.db             # Banco de dados SQLite (criado automaticamente)
 │
 ├── templates/               # Templates HTML
 │   ├── base.html            # Template base
@@ -115,10 +121,18 @@ sistema-gestao-de-Condomínio/
 │   ├── cadastrar_morador.html
 │   ├── cadastrar_visitante.html
 │   ├── cadastrar_multa.html
+│   ├── cadastrar_reserva.html
+│   ├── reservas.html
 │   ├── unidades.html        # Lista de unidades
 │   ├── moradores.html       # Lista de moradores
 │   ├── visitantes.html      # Lista de visitantes
-│   └── multas.html          # Lista de multas
+│   ├── multas.html          # Lista de multas
+│   ├── funcionarios.html
+│   ├── cadastrar_funcionario.html
+│   ├── editar_funcionario.html
+│   ├── notificacoes.html
+│   ├── cadastrar_notificacao.html
+│   └── chat.html
 │
 └── static/                 # Arquivos estáticos
     ├── css/
@@ -139,12 +153,16 @@ sistema-gestao-de-Condomínio/
 - Total de unidades do condomínio
 - Total de moradores do condomínio
 - Multas pendentes dos moradores
+- Reservas pendentes aguardando aprovação
+- Funcionários ativos e total de notificações enviadas
 - Acesso completo a todas as funcionalidades
 
 **Para Moradores:**
 - Moradores na sua unidade
 - Visitantes ativos da sua unidade
 - Multas em aberto e valor total
+- Minhas reservas realizadas
+- Notificações recebidas da administração
 - Cadastro de visitantes (apenas para sua unidade)
 - Visualização das suas multas
 - Acesso limitado às funcionalidades
@@ -166,6 +184,26 @@ sistema-gestao-de-Condomínio/
 - **Acompanhar Pagamentos**: Veja status das multas
 - **Relatórios**: Consulte valores e pendências
 
+### 6. Sistema de Reservas
+- **Morador**: Solicita, acompanha e cancela reservas das áreas comuns do condomínio
+- **Admin**: Aprova, rejeita ou cancela reservas; pode cadastrar reservas diretamente
+- **Prevenção de Conflitos**: Bloqueio automático de horários sobrepostos para uma mesma área
+
+### 7. Gestão de Funcionários (Admin)
+- Cadastro completo com dados pessoais, contato, turno e observações
+- Edição de informações, ativação/inativação e exclusão de colaboradores
+- Indicadores de funcionários ativos e total geral
+
+### 8. Sistema de Notificações
+- Envio de avisos gerais ou direcionados a moradores específicos
+- Indicador de notificações não lidas no menu e na listagem
+- Marcação automática de leitura ao acessar a página de notificações
+
+### 9. Chat Interno
+- Conversas individuais entre administradores e moradores
+- Badge no menu com quantidade de mensagens não lidas
+- Restrição de permissão: moradores conversam apenas com administradores; administradores com qualquer usuário ativo
+
 ## 🔧 Configurações
 
 ### Banco de Dados
@@ -184,8 +222,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://usuario:senha@localhost/co
 ```python
 app.run(debug=True, host='0.0.0.0', port=8080)  # Porta 8080
 ```
-<<<<<<< HEAD
-
 ## 🐛 Resolução de Problemas
 
 ### Erro de Dependências
@@ -204,5 +240,3 @@ pip install -r requirements.txt --force-reinstall
 netstat -ano | findstr :5000
 # Finalize o processo ou mude a porta
 ```
-=======
->>>>>>> e3a5be86098146e484f1d9863b1c2ae5996555d7
