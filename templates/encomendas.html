@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Encomendas - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-box me-2"></i>
+            Controle de Encomendas
+        </h1>
+        <p class="text-muted mb-0">Acompanhe as encomendas recebidas no condomínio.</p>
+    </div>
+    {% if usuario.tipo == 'Admin' %}
+    <a href="{{ url_for('cadastrar_encomenda') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>
+        Registrar Encomenda
+    </a>
+    {% endif %}
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h4 class="card-title">{{ pendentes }}</h4>
+                <p class="card-text mb-0">Pendentes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4 class="card-title">{{ retiradas }}</h4>
+                <p class="card-text mb-0">Retiradas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4 class="card-title">{{ total }}</h4>
+                <p class="card-text mb-0">Total</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if encomendas %}
+<div class="table-responsive shadow-sm rounded">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+                <th>
+                    <i class="fas fa-box me-1"></i>
+                    Descrição
+                </th>
+                {% if usuario.tipo == 'Admin' %}
+                <th>
+                    <i class="fas fa-user me-1"></i>
+                    Morador
+                </th>
+                <th>
+                    <i class="fas fa-building me-1"></i>
+                    Unidade
+                </th>
+                {% endif %}
+                <th>
+                    <i class="fas fa-user-tag me-1"></i>
+                    Remetente
+                </th>
+                <th>
+                    <i class="fas fa-image me-1"></i>
+                    Foto
+                </th>
+                <th>
+                    <i class="fas fa-info-circle me-1"></i>
+                    Status
+                </th>
+                <th>
+                    <i class="fas fa-calendar me-1"></i>
+                    Data Chegada
+                </th>
+                <th class="text-end">
+                    <i class="fas fa-cog me-1"></i>
+                    Ações
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for encomenda in encomendas %}
+            <tr>
+                <td>
+                    <strong>{{ encomenda.descricao }}</strong>
+                    {% if encomenda.observacoes %}
+                    <br><small class="text-muted">{{ encomenda.observacoes }}</small>
+                    {% endif %}
+                </td>
+                {% if usuario.tipo == 'Admin' %}
+                <td>{{ encomenda.morador.nome }}</td>
+                <td>
+                    <span class="badge bg-primary">
+                        {{ encomenda.morador.unidade.bloco }} - {{ encomenda.morador.unidade.numero }}
+                    </span>
+                </td>
+                {% endif %}
+                <td>
+                    {% if encomenda.remetente %}
+                        {{ encomenda.remetente }}
+                    {% else %}
+                        <span class="text-muted">Não informado</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if encomenda.foto %}
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#fotoModal{{ encomenda.id }}">
+                        <i class="fas fa-image me-1"></i>
+                        Ver Foto
+                    </button>
+                    <div class="modal fade" id="fotoModal{{ encomenda.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Foto da Encomenda</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img src="{{ url_for('uploaded_file', filename=encomenda.foto) }}" 
+                                         class="img-fluid" 
+                                         alt="Foto da encomenda">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <span class="text-muted">Sem foto</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if encomenda.status == 'Pendente' %}
+                        <span class="badge bg-warning text-dark">Pendente</span>
+                    {% else %}
+                        <span class="badge bg-success">Retirada</span>
+                        <br><small class="text-muted">{{ encomenda.data_retirada.strftime('%d/%m/%Y %H:%M') }}</small>
+                    {% endif %}
+                </td>
+                <td>
+                    <small>{{ encomenda.data_chegada.strftime('%d/%m/%Y %H:%M') }}</small>
+                </td>
+                <td class="text-end">
+                    {% if usuario.tipo == 'Admin' %}
+                        {% if encomenda.status == 'Pendente' %}
+                        <form action="{{ url_for('retirar_encomenda', encomenda_id=encomenda.id) }}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Confirmar retirada desta encomenda?')">
+                                <i class="fas fa-check me-1"></i>
+                                Marcar como Retirada
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted">Já retirada</span>
+                        {% endif %}
+                    {% else %}
+                        {% if encomenda.status == 'Pendente' %}
+                        <span class="badge bg-warning text-dark">Aguardando retirada</span>
+                        {% else %}
+                        <span class="text-muted">Retirada</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="text-center py-5 bg-light rounded">
+    <i class="fas fa-box fa-3x text-muted mb-3"></i>
+    <p class="lead mb-0">Nenhuma encomenda registrada até o momento.</p>
+    {% if usuario.tipo == 'Admin' %}
+    <a href="{{ url_for('cadastrar_encomenda') }}" class="btn btn-primary mt-3">
+        <i class="fas fa-plus me-1"></i>
+        Registrar Primeira Encomenda
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}
+

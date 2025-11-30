@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
 from sqlalchemy import or_, and_
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 CORS(app)
@@ -13,6 +14,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'condominio.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'sua_chave_secreta_aqui'
+app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'static', 'uploads', 'encomendas')
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 db = SQLAlchemy(app)
 
@@ -38,6 +44,7 @@ class Morador(db.Model):
     
     reservas = db.relationship('Reserva', backref='morador', lazy=True)
     notificacoes = db.relationship('Notificacao', backref='morador', lazy=True)
+    veiculos = db.relationship('Veiculo', backref='morador', lazy=True)
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -130,6 +137,32 @@ class ChatMensagem(db.Model):
     enviada_em = db.Column(db.DateTime, default=datetime.utcnow)
     lida_em = db.Column(db.DateTime, nullable=True)
 
+class Veiculo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    morador_id = db.Column(db.Integer, db.ForeignKey('morador.id'), nullable=False)
+    placa = db.Column(db.String(10), nullable=False)
+    modelo = db.Column(db.String(100), nullable=False)
+    data_cadastro = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        db.UniqueConstraint('placa', name='uq_veiculo_placa'),
+    )
+
+class Encomenda(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    morador_id = db.Column(db.Integer, db.ForeignKey('morador.id'), nullable=False)
+    descricao = db.Column(db.String(200), nullable=False)
+    remetente = db.Column(db.String(100), nullable=True)
+    foto = db.Column(db.String(255), nullable=True)
+    status = db.Column(db.String(20), default='Pendente')
+    data_chegada = db.Column(db.DateTime, default=datetime.utcnow)
+    data_retirada = db.Column(db.DateTime, nullable=True)
+    observacoes = db.Column(db.Text, nullable=True)
+    registrado_por = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    
+    morador = db.relationship('Morador', backref='encomendas')
+    registrador = db.relationship('Usuario', backref='encomendas_registradas')
+
 def login_required(f):
     from functools import wraps
     @wraps(f)
@@ -155,11 +188,11 @@ def admin_required(f):
 @app.context_processor
 def inject_badges():
     if 'user_id' not in session:
-        return {'notificacoes_nao_lidas': 0, 'chat_nao_lidas': 0}
+        return {'notificacoes_nao_lidas': 0, 'chat_nao_lidas': 0, 'encomendas_pendentes': 0}
     
     usuario = Usuario.query.get(session['user_id'])
     if not usuario:
-        return {'notificacoes_nao_lidas': 0, 'chat_nao_lidas': 0}
+        return {'notificacoes_nao_lidas': 0, 'chat_nao_lidas': 0, 'encomendas_pendentes': 0}
     
     notificacoes_query = Notificacao.query
     if usuario.tipo != 'Admin':
@@ -173,9 +206,17 @@ def inject_badges():
     
     chat_nao_lidas = ChatMensagem.query.filter_by(destinatario_id=usuario.id, lida_em=None).count()
     
+    encomendas_pendentes = 0
+    if usuario.tipo != 'Admin' and usuario.morador_id:
+        encomendas_pendentes = Encomenda.query.filter_by(
+            morador_id=usuario.morador_id,
+            status='Pendente'
+        ).count()
+    
     return {
         'notificacoes_nao_lidas': notificacoes_nao_lidas,
-        'chat_nao_lidas': chat_nao_lidas
+        'chat_nao_lidas': chat_nao_lidas,
+        'encomendas_pendentes': encomendas_pendentes
     }
 
 @app.route('/')
@@ -943,6 +984,164 @@ def chat_conversa(destinatario_id):
         destinatario=destinatario,
         mensagens=mensagens
     )
+
+@app.route('/veiculos')
+@login_required
+def listar_veiculos():
+    usuario = Usuario.query.get(session['user_id'])
+    
+    if usuario.tipo == 'Admin':
+        veiculos = Veiculo.query.join(Morador).order_by(Morador.nome, Veiculo.placa).all()
+    else:
+        veiculos = Veiculo.query.filter_by(morador_id=usuario.morador_id).order_by(Veiculo.placa).all()
+    
+    return render_template('veiculos.html', veiculos=veiculos, usuario=usuario)
+
+@app.route('/cadastrar_veiculo', methods=['GET', 'POST'])
+@admin_required
+def cadastrar_veiculo():
+    if request.method == 'POST':
+        try:
+            placa = request.form['placa'].strip().upper()
+            modelo = request.form['modelo'].strip()
+            morador_id = int(request.form['morador_id'])
+            
+            veiculo_existente = Veiculo.query.filter_by(placa=placa).first()
+            if veiculo_existente:
+                flash('Já existe um veículo cadastrado com esta placa!', 'error')
+                moradores = Morador.query.order_by(Morador.nome).all()
+                return render_template('cadastrar_veiculo.html', moradores=moradores)
+            
+            veiculo = Veiculo(
+                morador_id=morador_id,
+                placa=placa,
+                modelo=modelo
+            )
+            db.session.add(veiculo)
+            db.session.commit()
+            flash('Veículo cadastrado com sucesso!', 'success')
+            return redirect(url_for('listar_veiculos'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao cadastrar veículo: {str(e)}', 'error')
+    
+    moradores = Morador.query.order_by(Morador.nome).all()
+    return render_template('cadastrar_veiculo.html', moradores=moradores)
+
+@app.route('/veiculos/<int:veiculo_id>/excluir', methods=['POST'])
+@admin_required
+def excluir_veiculo(veiculo_id):
+    veiculo = Veiculo.query.get_or_404(veiculo_id)
+    try:
+        db.session.delete(veiculo)
+        db.session.commit()
+        flash('Veículo removido com sucesso!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao remover veículo: {str(e)}', 'error')
+    
+    return redirect(url_for('listar_veiculos'))
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/encomendas')
+@login_required
+def listar_encomendas():
+    usuario = Usuario.query.get(session['user_id'])
+    
+    if usuario.tipo == 'Admin':
+        encomendas = Encomenda.query.join(Morador).order_by(Encomenda.data_chegada.desc()).all()
+    else:
+        encomendas = Encomenda.query.filter_by(morador_id=usuario.morador_id).order_by(Encomenda.data_chegada.desc()).all()
+    
+    pendentes = [e for e in encomendas if e.status == 'Pendente']
+    retiradas = [e for e in encomendas if e.status == 'Retirada']
+    
+    return render_template('encomendas.html', 
+                         encomendas=encomendas, 
+                         usuario=usuario,
+                         pendentes=len(pendentes),
+                         retiradas=len(retiradas),
+                         total=len(encomendas))
+
+@app.route('/cadastrar_encomenda', methods=['GET', 'POST'])
+@admin_required
+def cadastrar_encomenda():
+    if request.method == 'POST':
+        try:
+            morador_id = int(request.form['morador_id'])
+            descricao = request.form['descricao'].strip()
+            remetente = request.form.get('remetente', '').strip() or None
+            observacoes = request.form.get('observacoes', '').strip() or None
+            registrado_por = session['user_id']
+            
+            foto_filename = None
+            if 'foto' in request.files:
+                file = request.files['foto']
+                if file and file.filename != '' and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
+                    foto_filename = timestamp + filename
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], foto_filename))
+            
+            encomenda = Encomenda(
+                morador_id=morador_id,
+                descricao=descricao,
+                remetente=remetente,
+                foto=foto_filename,
+                observacoes=observacoes,
+                registrado_por=registrado_por,
+                status='Pendente'
+            )
+            db.session.add(encomenda)
+            db.session.commit()
+            
+            morador = Morador.query.get(morador_id)
+            if morador and morador.usuario:
+                notificacao = Notificacao(
+                    titulo='Nova Encomenda Recebida',
+                    mensagem=f'Você recebeu uma nova encomenda: {descricao}',
+                    morador_id=morador_id,
+                    autor_id=registrado_por
+                )
+                db.session.add(notificacao)
+                db.session.commit()
+            
+            flash('Encomenda registrada com sucesso! O morador foi notificado.', 'success')
+            return redirect(url_for('listar_encomendas'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao cadastrar encomenda: {str(e)}', 'error')
+    
+    moradores = Morador.query.order_by(Morador.nome).all()
+    return render_template('cadastrar_encomenda.html', moradores=moradores)
+
+@app.route('/encomendas/<int:encomenda_id>/retirar', methods=['POST'])
+@admin_required
+def retirar_encomenda(encomenda_id):
+    encomenda = Encomenda.query.get_or_404(encomenda_id)
+    
+    if encomenda.status == 'Retirada':
+        flash('Esta encomenda já foi retirada.', 'error')
+        return redirect(url_for('listar_encomendas'))
+    
+    try:
+        encomenda.status = 'Retirada'
+        encomenda.data_retirada = datetime.utcnow()
+        db.session.commit()
+        flash('Encomenda marcada como retirada com sucesso!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao marcar encomenda como retirada: {str(e)}', 'error')
+    
+    return redirect(url_for('listar_encomendas'))
+
+@app.route('/uploads/encomendas/<filename>')
+@login_required
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     with app.app_context():

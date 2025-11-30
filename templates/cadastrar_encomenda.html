@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Encomenda - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-box me-2"></i>
+                    Registrar Nova Encomenda
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('cadastrar_encomenda') }}" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="morador_id" class="form-label">
+                            <i class="fas fa-user me-1"></i>
+                            Morador <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="morador_id" name="morador_id" required>
+                            <option value="" disabled selected>Selecione o morador</option>
+                            {% for morador in moradores %}
+                            <option value="{{ morador.id }}">
+                                {{ morador.nome }} - {{ morador.unidade.bloco }} {{ morador.unidade.numero }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">
+                            <i class="fas fa-box me-1"></i>
+                            Descrição da Encomenda <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="descricao" 
+                               name="descricao" 
+                               placeholder="Ex: Pacote pequeno, Caixa média, Envelope" 
+                               required 
+                               maxlength="200">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="remetente" class="form-label">
+                            <i class="fas fa-user-tag me-1"></i>
+                            Remetente (Opcional)
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="remetente" 
+                               name="remetente" 
+                               placeholder="Ex: Amazon, Mercado Livre, Nome da pessoa" 
+                               maxlength="100">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="foto" class="form-label">
+                            <i class="fas fa-image me-1"></i>
+                            Foto da Encomenda (Opcional)
+                        </label>
+                        <input type="file" 
+                               class="form-control" 
+                               id="foto" 
+                               name="foto" 
+                               accept="image/png,image/jpeg,image/jpg,image/gif,image/webp">
+                        <small class="form-text text-muted">Formatos aceitos: PNG, JPG, JPEG, GIF, WEBP (máx. 5MB)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="observacoes" class="form-label">
+                            <i class="fas fa-comment me-1"></i>
+                            Observações (Opcional)
+                        </label>
+                        <textarea class="form-control" 
+                                  id="observacoes" 
+                                  name="observacoes" 
+                                  rows="3" 
+                                  placeholder="Informações adicionais sobre a encomenda"></textarea>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Importante:</strong> O morador receberá automaticamente uma notificação sobre a chegada desta encomenda.
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('listar_encomendas') }}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            Registrar Encomenda
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fotoInput = document.getElementById('foto');
+    
+    fotoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                alert('O arquivo é muito grande. Tamanho máximo: 5MB');
+                e.target.value = '';
+                return;
+            }
+            
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Formato de arquivo não permitido. Use: PNG, JPG, JPEG, GIF ou WEBP');
+                e.target.value = '';
+                return;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% endblock %}
+

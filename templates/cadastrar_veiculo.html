@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Veículo - Sistema de Gestão de Condomínio{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-car me-2"></i>
+                    Cadastrar Novo Veículo
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('cadastrar_veiculo') }}">
+                    <div class="mb-3">
+                        <label for="morador_id" class="form-label">
+                            <i class="fas fa-user me-1"></i>
+                            Morador <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="morador_id" name="morador_id" required>
+                            <option value="" disabled selected>Selecione o morador</option>
+                            {% for morador in moradores %}
+                            <option value="{{ morador.id }}">
+                                {{ morador.nome }} - {{ morador.unidade.bloco }} {{ morador.unidade.numero }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="placa" class="form-label">
+                            <i class="fas fa-id-card me-1"></i>
+                            Placa <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="placa" 
+                               name="placa" 
+                               placeholder="ABC-1234 ou ABC1234" 
+                               required 
+                               maxlength="10"
+                               style="text-transform: uppercase;">
+                        <small class="form-text text-muted">Digite a placa do veículo (será convertida para maiúsculas)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modelo" class="form-label">
+                            <i class="fas fa-car me-1"></i>
+                            Modelo <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="modelo" 
+                               name="modelo" 
+                               placeholder="Ex: Honda Civic, Toyota Corolla" 
+                               required 
+                               maxlength="100">
+                        <small class="form-text text-muted">Digite o modelo do veículo</small>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('listar_veiculos') }}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            Cadastrar Veículo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const placaInput = document.getElementById('placa');
+    
+    placaInput.addEventListener('input', function(e) {
+        let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        
+        if (value.length <= 3) {
+            e.target.value = value;
+        } else if (value.length <= 7) {
+            e.target.value = value.substring(0, 3) + '-' + value.substring(3);
+        } else {
+            e.target.value = value.substring(0, 3) + '-' + value.substring(3, 7);
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% endblock %}
+
